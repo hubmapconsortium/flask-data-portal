@@ -1,17 +1,16 @@
 import React from 'react';
 import Button, { ButtonProps } from '@mui/material/Button';
-import useSavedEntitiesStore from 'js/stores/useSavedEntitiesStore';
-import useEntityStore, { savedAlertStatus } from 'js/stores/useEntityStore';
+import { useSavedListsAlertsStore, savedAlertStatus } from 'js/stores/useSavedListsAlertsStore';
 import { useTrackEntityPageEvent } from 'js/components/detailPage/useTrackEntityPageEvent';
+import { useSavedLists } from 'js/components/savedLists/hooks';
 
 interface SaveEntityButtonProps extends ButtonProps {
   uuid: string;
 }
 
 function SaveEntityButton({ uuid, ...rest }: SaveEntityButtonProps) {
-  const saveEntity = useSavedEntitiesStore((state) => state.saveEntity);
-  const setShouldDisplaySavedOrEditedAlert = useEntityStore((state) => state.setShouldDisplaySavedOrEditedAlert);
-
+  const { saveEntity } = useSavedLists();
+  const setSavedOrEditedList = useSavedListsAlertsStore((state) => state.setSavedOrEditedList);
   const trackSave = useTrackEntityPageEvent();
 
   return (
@@ -21,7 +20,7 @@ function SaveEntityButton({ uuid, ...rest }: SaveEntityButtonProps) {
       onClick={() => {
         saveEntity(uuid);
         trackSave({ action: 'Save To List', label: uuid });
-        setShouldDisplaySavedOrEditedAlert(savedAlertStatus);
+        setSavedOrEditedList(savedAlertStatus);
       }}
       {...rest}
     >

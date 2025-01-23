@@ -6,17 +6,26 @@ import useStateSet from 'js/hooks/useStateSet';
 import DialogModal from 'js/shared-styles/DialogModal';
 import AddToList from 'js/components/savedLists/AddToList';
 import CreateListDialog from 'js/components/savedLists/CreateListDialog';
-import useSavedEntitiesStore from 'js/stores/useSavedEntitiesStore';
+import { useSavedLists } from 'js/components/savedLists/hooks';
 
-const useSavedEntitiesSelector = (state) => ({
-  addEntitiesToList: state.addEntitiesToList,
-  savedLists: state.savedLists,
-});
+interface SaveToListDialogProps {
+  title: string;
+  dialogIsOpen: boolean;
+  setDialogIsOpen: (isOpen: boolean) => void;
+  entitiesToAdd: string[];
+  onSaveCallback: () => void;
+}
 
-function SaveToListDialog({ title, dialogIsOpen, setDialogIsOpen, entitiesToAdd, onSaveCallback }) {
-  const [selectedLists, addToSelectedLists, removeFromSelectedLists] = useStateSet([]);
+function SaveToListDialog({
+  title,
+  dialogIsOpen,
+  setDialogIsOpen,
+  entitiesToAdd,
+  onSaveCallback,
+}: SaveToListDialogProps) {
+  const [selectedLists, addToSelectedLists, removeFromSelectedLists] = useStateSet<string>([]);
 
-  const { addEntitiesToList, savedLists } = useSavedEntitiesStore(useSavedEntitiesSelector);
+  const { addEntitiesToList, savedLists } = useSavedLists();
 
   function addSavedEntitiesToList() {
     selectedLists.forEach((list) => addEntitiesToList(list, entitiesToAdd));
@@ -33,6 +42,7 @@ function SaveToListDialog({ title, dialogIsOpen, setDialogIsOpen, entitiesToAdd,
       title={title}
       content={
         <AddToList
+          allLists={savedLists}
           selectedLists={selectedLists}
           addToSelectedLists={addToSelectedLists}
           removeFromSelectedLists={removeFromSelectedLists}

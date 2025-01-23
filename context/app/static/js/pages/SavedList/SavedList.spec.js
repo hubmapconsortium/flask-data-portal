@@ -1,18 +1,22 @@
 import React from 'react';
 import { render } from 'test-utils/functions';
-import useSavedEntitiesStore from 'js/stores/useSavedEntitiesStore';
+import { useLocalSavedEntitiesStore, useRemoteSavedEntitiesStore } from 'js/stores/useSavedEntitiesStore';
 import SavedList from './SavedList';
 
-jest.mock('js/stores/useSavedEntitiesStore'); // Mock the hook
+jest.mock('js/stores/useSavedEntitiesStore', () => ({
+  useLocalSavedEntitiesStore: jest.fn(),
+  useRemoteSavedEntitiesStore: jest.fn(),
+})); // Mock the hook
 
 describe('SavedList component', () => {
   beforeEach(() => {
-    useSavedEntitiesStore.mockClear(); // Clear all instances and calls to the mock
+    useLocalSavedEntitiesStore.mockClear(); // Clear all instances and calls to the mock
+    useRemoteSavedEntitiesStore.mockClear();
   });
 
   test('throws error when listUUID is not in savedLists', () => {
     // Setup the mock to return savedLists as an empty object
-    useSavedEntitiesStore.mockImplementation(() => ({
+    useLocalSavedEntitiesStore.mockImplementation(() => ({
       savedLists: {},
       removeEntitiesFromList: jest.fn(),
     }));
@@ -32,7 +36,7 @@ describe('SavedList component', () => {
   test('renders without error when listUUID is in savedLists', () => {
     const listUUID = 'any-uuid';
 
-    useSavedEntitiesStore.mockImplementation(() => ({
+    useLocalSavedEntitiesStore.mockImplementation(() => ({
       savedLists: {
         [listUUID]: {
           title: 'test title',
